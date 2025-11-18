@@ -1,0 +1,2326 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JEREM BATTLEBOX</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-image: url('https://m.gettywallpapers.com/fr/wp-content/uploads/2023/09/Galaxie-Fond-decran-dordinateur-4k-HD.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #fff;
+      text-align: center;
+      min-height: 100vh;
+      padding: 10px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(26, 26, 46, 0.7) 0%, rgba(22, 33, 62, 0.7) 50%, rgba(15, 52, 96, 0.7) 100%);
+      z-index: -1;
+    }
+
+    .game-container {
+      width: 100%;
+      max-width: 800px;
+      background: rgba(10, 15, 30, 0.9);
+      border-radius: 20px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+      position: relative;
+      border: 2px solid rgba(184, 134, 11, 0.5);
+      margin-bottom: 20px;
+    }
+
+    .game-container::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #b8860b, #daa520, #ffd700, #daa520, #b8860b);
+      border-radius: 22px;
+      z-index: -1;
+      animation: borderGlow 3s linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes borderGlow {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+
+    h1 {
+      font-size: 1.8em;
+      margin-bottom: 15px;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      background: linear-gradient(45deg, #ffd700, #daa520, #b8860b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .squirrel-logo {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 15px;
+      background-image: url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43f.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+      animation: squirrelBounce 2s ease-in-out infinite;
+    }
+
+    @keyframes squirrelBounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-5px) scale(1.05); }
+    }
+
+    .difficulty-selector {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+
+    .difficulty-btn {
+      width: 90px;
+      height: 90px;
+      border-radius: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      font-size: 14px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      position: relative;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      animation: floatButton 3s ease-in-out infinite;
+    }
+
+    @keyframes floatButton {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-8px) scale(1.05); }
+    }
+
+    .difficulty-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+    }
+
+    .difficulty-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-3px) scale(1.08);
+    }
+
+    .difficulty-btn.active {
+      border-color: white;
+      box-shadow: 0 0 10px rgba(255,255,255,0.5);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .instructions {
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(184, 134, 11, 0.3);
+    }
+
+    .instructions h2 {
+      font-size: 1.4em;
+      margin-bottom: 8px;
+      background: linear-gradient(45deg, #ffd700, #daa520);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .instructions p {
+      font-size: 1em;
+      font-weight: bold;
+      color: #daa520;
+    }
+
+    .gold-container {
+      position: relative;
+      margin: 20px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      min-height: 500px;
+      perspective: 1000px;
+      gap: 30px;
+    }
+
+    .pokemon-monster {
+      width: 120px;
+      height: 120px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      filter: drop-shadow(0 0 10px rgba(255, 200, 0, 0.6));
+      animation: floatPokemon 2s ease-in-out infinite;
+    }
+
+    .pokemon-monster:hover {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 15px rgba(255, 200, 0, 0.9));
+    }
+
+    .pokemon-monster.defeated {
+      opacity: 0.3;
+      filter: grayscale(100%);
+      pointer-events: none;
+    }
+
+    .pokemon1 {
+      background-image: url('https://i.gifer.com/4xjS.gif');
+      animation-delay: 0s;
+    }
+
+    .pokemon2 {
+      background-image: url('https://i.gifer.com/4xjS.gif');
+      animation-delay: 0.3s;
+    }
+
+    @keyframes floatPokemon {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .hp-bar {
+      display: none;
+    }
+
+    .coins-earned {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(45deg, #ffd700, #ffed4a);
+      color: #000;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-weight: bold;
+      font-size: 14px;
+      animation: coinEarn 1.5s ease forwards;
+      pointer-events: none;
+      z-index: 1000;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    }
+
+    @keyframes coinEarn {
+      0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px) scale(0.5);
+      }
+      40% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-10px) scale(1.2);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-40px) scale(1);
+      }
+    }
+
+    .gold-bar {
+      width: 400px;
+      height: 300px;
+      margin: 0 auto;
+      background-image: url('https://i.gifer.com/4o45.gif');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      position: relative;
+      transition: all 0.3s ease;
+      filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)) brightness(1.2) contrast(1.1);
+      z-index: 5;
+    }
+
+    .gold-bar.easy {
+      filter: drop-shadow(0 0 15px rgba(0, 255, 0, 0.7)) brightness(1.1);
+    }
+
+    .gold-bar.hard {
+      filter: drop-shadow(0 0 25px rgba(255, 0, 0, 0.8)) brightness(1.1) hue-rotate(330deg);
+      animation: redGlow 2s ease-in-out infinite alternate;
+    }
+
+    .gold-bar.extreme {
+      filter: drop-shadow(0 0 30px rgba(148, 0, 211, 0.9)) brightness(1.2) hue-rotate(270deg);
+      animation: purpleGlow 2s ease-in-out infinite alternate;
+    }
+
+    .gold-bar.legendary {
+      filter: drop-shadow(0 0 35px rgba(255, 165, 0, 0.9)) brightness(1.3) hue-rotate(180deg);
+      animation: legendaryGlow 2s ease-in-out infinite alternate;
+    }
+
+    .gold-bar.gotille {
+      filter: drop-shadow(0 0 40px rgba(0, 255, 255, 0.9)) brightness(1.4) hue-rotate(120deg);
+      animation: gotilleGlow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes redGlow {
+      0% { filter: drop-shadow(0 0 25px rgba(255, 0, 0, 0.8)) brightness(1.1) hue-rotate(330deg); }
+      100% { filter: drop-shadow(0 0 35px rgba(255, 50, 50, 1)) brightness(1.3) hue-rotate(320deg); }
+    }
+
+    @keyframes purpleGlow {
+      0% { filter: drop-shadow(0 0 30px rgba(148, 0, 211, 0.9)) brightness(1.2) hue-rotate(270deg); }
+      100% { filter: drop-shadow(0 0 40px rgba(186, 85, 211, 1)) brightness(1.4) hue-rotate(260deg); }
+    }
+
+    @keyframes legendaryGlow {
+      0% { filter: drop-shadow(0 0 35px rgba(255, 165, 0, 0.9)) brightness(1.3) hue-rotate(180deg); }
+      100% { filter: drop-shadow(0 0 45px rgba(255, 200, 0, 1)) brightness(1.5) hue-rotate(160deg); }
+    }
+
+    @keyframes gotilleGlow {
+      0% { filter: drop-shadow(0 0 40px rgba(0, 255, 255, 0.9)) brightness(1.4) hue-rotate(120deg); }
+      100% { filter: drop-shadow(0 0 50px rgba(0, 200, 255, 1)) brightness(1.6) hue-rotate(100deg); }
+    }
+
+    .gold-bar.hit {
+      animation: lightHit 0.4s ease-out;
+    }
+
+    .gold-bar.heavy-hit {
+      animation: heavyHit 0.6s ease-out;
+    }
+
+    .gold-bar.critical-hit {
+      animation: criticalHit 0.8s ease-out;
+    }
+
+    .gold-bar.cracked {
+      filter: brightness(0.7) drop-shadow(0 0 15px rgba(255, 0, 0, 0.8));
+      animation: redPulse 1s infinite;
+    }
+
+    .gold-bar.broken {
+      opacity: 0.3;
+      filter: grayscale(100%) brightness(0.3);
+      animation: knockout 1.5s ease-out forwards;
+    }
+
+    .pool-bar-container {
+      width: 80%;
+      max-width: 400px;
+      height: 30px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid #ffd700;
+      border-radius: 15px;
+      margin: 10px auto 0;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    }
+    .pool-bar-progress {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(45deg, #ffd700, #ffed4a);
+      border-radius: 12px;
+      transition: width 0.5s ease;
+    }
+    .pool-bar-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-weight: bold;
+      font-size: 16px;
+      color: white;
+      text-shadow: 0 0 5px black;
+      white-space: nowrap;
+    }
+
+    .attack-modes {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+
+    .attack-mode-image {
+      width: 110px;
+      height: 110px;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      position: relative;
+      animation: floatAttack 2.5s ease-in-out infinite;
+    }
+
+    @keyframes floatAttack {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-6px) scale(1.03); }
+    }
+
+    .attack-mode-image:nth-child(1) {
+      animation-delay: 0s;
+    }
+
+    .attack-mode-image:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .attack-mode-image:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    .attack-mode-image:nth-child(4) {
+      animation-delay: 0.6s;
+    }
+
+    .attack-mode-image:nth-child(5) {
+      animation-delay: 0.8s;
+    }
+
+    .attack-mode-image:nth-child(6) {
+      animation-delay: 1s;
+    }
+
+    .attack-mode-image:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-5px) scale(1.08);
+    }
+
+    .attack-mode-image.active {
+      border-color: #fff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+
+    .attack-mode-image img {
+      width: 65px;
+      height: 65px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+    }
+
+    .attack-mode-label {
+      font-size: 13px;
+      margin-top: 5px;
+      font-weight: bold;
+      color: #feca57;
+      text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+    }
+
+    .hammer {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      font-size: 2.5em;
+      z-index: 10;
+      top: -30px;
+      right: -15px;
+      transform-origin: bottom center;
+      transition: transform 0.3s ease;
+      pointer-events: none;
+    }
+
+    .hammer.hitting {
+      animation: hammerHit 0.4s ease-out;
+    }
+
+    @keyframes hammerHit {
+      0% { transform: rotate(0deg) translateY(0); }
+      50% { transform: rotate(-45deg) translateY(15px); }
+      100% { transform: rotate(0deg) translateY(0); }
+    }
+
+    @keyframes lightHit {
+      0% { transform: translateY(0) scale(1); }
+      25% { transform: translateY(-5px) scale(0.95); }
+      50% { transform: translateY(3px) scale(1.02); }
+      75% { transform: translateY(-2px) scale(0.98); }
+      100% { transform: translateY(0) scale(1); }
+    }
+
+    @keyframes heavyHit {
+      0% { transform: translateY(0) scale(1); }
+      20% { transform: translateY(-8px) scale(0.9); }
+      40% { transform: translateY(5px) scale(1.05); }
+      60% { transform: translateY(-3px) scale(0.95); }
+      80% { transform: translateY(2px) scale(1.02); }
+      100% { transform: translateY(0) scale(1); }
+    }
+
+    @keyframes criticalHit {
+      0% { transform: translateY(0) scale(1); }
+      15% { transform: translateY(-12px) scale(0.85); }
+      30% { transform: translateY(8px) scale(1.1); }
+      45% { transform: translateY(-6px) scale(0.9); }
+      60% { transform: translateY(4px) scale(1.05); }
+      75% { transform: translateY(-2px) scale(0.97); }
+      90% { transform: translateY(1px) scale(1.02); }
+      100% { transform: translateY(0) scale(1); }
+    }
+
+    @keyframes knockout {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      30% { transform: translateY(-10px) scale(0.9); opacity: 0.9; }
+      70% { transform: translateY(40px) scale(0.7); opacity: 0.7; }
+      100% { transform: translateY(60px) scale(0.6); opacity: 0.4; }
+    }
+
+    @keyframes redPulse {
+      0%, 100% { filter: brightness(0.7) drop-shadow(0 0 15px rgba(255, 0, 0, 0.8)); }
+      50% { filter: brightness(0.5) drop-shadow(0 0 25px rgba(255, 0, 0, 1)); }
+    }
+
+    .screen-shake {
+      animation: screenShake 0.4s ease-out;
+    }
+
+    @keyframes screenShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .impact-effect {
+      position: absolute;
+      font-size: 2em;
+      pointer-events: none;
+      z-index: 3;
+      animation: impactPop 1s ease-out forwards;
+      opacity: 0;
+      filter: drop-shadow(0 0 10px rgba(255,255,255,0.8));
+    }
+
+    @keyframes impactPop {
+      0% { opacity: 0; transform: scale(0.3) translateY(0); }
+      30% { opacity: 1; transform: scale(1.5) translateY(-15px); }
+      100% { opacity: 0; transform: scale(1) translateY(-50px); }
+    }
+
+    .controls {
+      margin: 15px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    button {
+      padding: 12px 25px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 25px;
+      background: linear-gradient(45deg, #b8860b, #daa520);
+      color: #fff;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(45deg, #daa520, #ffd700);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    #resetBtn {
+      background: linear-gradient(45deg, #555, #777);
+    }
+
+    #resetBtn:hover {
+      background: linear-gradient(45deg, #777, #999);
+    }
+
+    #spawnPokemonsBtn {
+      background: linear-gradient(45deg, #ff9800, #ffc107);
+    }
+
+    #spawnPokemonsBtn:hover {
+      background: linear-gradient(45deg, #ffc107, #ffd54f);
+    }
+
+    #changeHiveBtn {
+      background: linear-gradient(45deg, #9c27b0, #e91e63);
+    }
+
+    #changeHiveBtn:hover {
+      background: linear-gradient(45deg, #e91e63, #ff4081);
+    }
+
+    #message {
+      margin: 15px 0;
+      font-size: 1em;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      min-height: 25px;
+      color: #daa520;
+    }
+
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .popup-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .popup-content {
+      background: linear-gradient(135deg, rgba(184, 134, 11, 0.95), rgba(218, 165, 32, 0.95));
+      padding: 25px;
+      border-radius: 20px;
+      max-width: 450px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 3px solid rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+      transform: scale(0.7);
+      transition: transform 0.4s ease;
+      position: relative;
+    }
+
+    .popup-overlay.active .popup-content {
+      transform: scale(1);
+    }
+
+    .popup-content h3 {
+      font-size: 1.8em;
+      margin-bottom: 15px;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .popup-reward-image {
+      width: 140px;
+      height: 140px;
+      margin: 15px auto;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+
+    .popup-reward-text {
+      font-size: 1.3em;
+      margin: 15px 0;
+      color: #fff;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+
+    .popup-victory-message {
+      font-size: 1.4em;
+      margin: 15px 0;
+      color: #feca57;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+      font-weight: bold;
+    }
+
+    .popup-close-btn {
+      padding: 10px 25px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 20px;
+      background: linear-gradient(45deg, #b8860b, #daa520);
+      color: #fff;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    .popup-close-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(45deg, #daa520, #ffd700);
+    }
+
+    .coins-display {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(45deg, #b8860b, #daa520);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      animation: coinPop 1s ease;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    @keyframes coinPop {
+      0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px) scale(0.5);
+      }
+      50% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-10px) scale(1.2);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-30px) scale(1);
+      }
+    }
+
+    .combo-indicator {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: linear-gradient(45deg, #b8860b, #daa520);
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9em;
+      display: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    .difficulty-badge {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .difficulty-badge.easy {
+      background: linear-gradient(45deg, #4CAF50, #8BC34A);
+    }
+
+    .difficulty-badge.hard {
+      background: linear-gradient(45deg, #F44336, #E91E63);
+    }
+
+    .difficulty-badge.extreme {
+      background: linear-gradient(45deg, #9C27B0, #673AB7);
+    }
+
+    .difficulty-badge.legendary {
+      background: linear-gradient(45deg, #FF9800, #FF5722);
+    }
+
+    .difficulty-badge.gotille {
+      background: linear-gradient(45deg, #00BCD4, #03A9F4);
+    }
+
+    .winners-board {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.9);
+      padding: 15px;
+      border-radius: 15px;
+      z-index: 100;
+      max-width: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+      border: 2px solid rgba(255, 215, 0, 0.7);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      cursor: move;
+    }
+
+    .winners-board h3 {
+      color: #ffd700;
+      font-size: 1.1em;
+      margin-bottom: 10px;
+      text-align: center;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      user-select: none;
+    }
+
+    .winners-list {
+      text-align: left;
+      max-height: 350px;
+      overflow-y: auto;
+    }
+
+    .winner-item {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.85em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.05);
+      margin-bottom: 5px;
+      border-radius: 8px;
+      border-left: 3px solid #ffd700;
+    }
+
+    .winner-username {
+      font-weight: bold;
+      color: #fff;
+      flex: 1;
+    }
+
+    .winner-prize {
+      color: #ffd700;
+      font-weight: bold;
+      margin-left: 10px;
+      background: rgba(255, 215, 0, 0.2);
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 0.8em;
+    }
+
+    .winners-empty {
+      text-align: center;
+      color: #888;
+      font-style: italic;
+      padding: 20px;
+      font-size: 0.9em;
+    }
+
+    .pool-display {
+      position: fixed;
+      top: 180px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.9);
+      padding: 15px;
+      border-radius: 15px;
+      z-index: 100;
+      max-width: 220px;
+      border: 2px solid rgba(255, 215, 0, 0.7);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      cursor: move;
+    }
+
+    .pool-display h3 {
+      color: #ffd700;
+      font-size: 1em;
+      margin-bottom: 10px;
+      text-align: center;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      user-select: none;
+    }
+
+    .pool-amount {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #ffd700;
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .pool-chance {
+      font-size: 0.8em;
+      color: #fff;
+      text-align: center;
+      margin-top: 5px;
+    }
+
+    .save-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    #exportBtn {
+      background: linear-gradient(45deg, #4CAF50, #8BC34A);
+    }
+
+    #exportBtn:hover {
+      background: linear-gradient(45deg, #8BC34A, #CDDC39);
+    }
+
+    #importBtn {
+      background: linear-gradient(45deg, #2196F3, #03A9F4);
+    }
+
+    #importBtn:hover {
+      background: linear-gradient(45deg, #03A9F4, #00BCD4);
+    }
+
+    .save-indicator {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 10px;
+      font-size: 0.8em;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .save-indicator.show {
+      opacity: 1;
+    }
+
+    .floating-text {
+      position: absolute;
+      font-size: 1.8em;
+      font-weight: bold;
+      color: red;
+      text-shadow: 0 0 5px black;
+      pointer-events: none;
+      z-index: 1001;
+      animation: floatDamage 1.5s ease-out forwards;
+      white-space: nowrap;
+    }
+
+    @keyframes floatDamage {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(0.8);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-60px) scale(1.3);
+      }
+    }
+
+    @media (min-width: 768px) {
+      .game-container {
+        padding: 30px;
+        max-width: 900px;
+      }
+      
+      h1 {
+        font-size: 2.2em;
+      }
+      
+      .gold-bar {
+        width: 500px;
+        height: 350px;
+      }
+      
+      .hammer {
+        width: 80px;
+        height: 80px;
+        font-size: 3em;
+        top: -40px;
+        right: -20px;
+      }
+      
+      .controls {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      
+      button {
+        padding: 15px 30px;
+      }
+
+      .attack-mode-image {
+        width: 100px;
+        height: 100px;
+      }
+
+      .attack-mode-image img {
+        width: 55px;
+        height: 55px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .attack-modes {
+        gap: 5px;
+        padding: 0 5px;
+      }
+
+      .attack-mode-image {
+        width: 85px;
+        height: 85px;
+      }
+
+      .attack-mode-image img {
+        width: 50px;
+        height: 50px;
+      }
+
+      .attack-mode-label {
+        font-size: 11px;
+      }
+
+      .gold-bar {
+        width: 280px;
+        height: 200px;
+      }
+      
+      .pool-bar-container {
+        width: 90%;
+        max-width: 280px;
+        height: 25px;
+      }
+      .pool-bar-text {
+        font-size: 14px;
+      }
+
+      .pokemon-monster {
+        width: 80px;
+        height: 80px;
+      }
+
+      .winners-board {
+        max-width: 250px;
+        right: 10px;
+        top: 10px;
+      }
+      
+      .pool-display {
+        max-width: 180px;
+        left: 10px;
+        top: 180px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="save-indicator" id="saveIndicator">Sauvegarde automatique...</div>
+
+  <div class="pool-display" id="coinPoolDisplay">
+    <h3>💰 Pool de Pièces</h3>
+    <div class="pool-amount" id="coinPoolAmount">0</div>
+    <div class="pool-chance">Chance de drop: 1/2000</div>
+  </div>
+
+  <div class="winners-board" id="winnersBoard">
+    <h3>🏆 Historique des Gains</h3>
+    <div class="winners-list" id="winnersList">
+      <div class="winners-empty">Aucun gain pour le moment...</div>
+    </div>
+  </div>
+
+  <div class="game-container" id="gameContainer">
+    <div class="combo-indicator" id="comboIndicator">COMBO x0</div>
+
+    <h1>JEREM BATTLEBOX</h1>
+    <div class="squirrel-logo"></div>
+    
+    <div class="difficulty-selector">
+      <div class="difficulty-btn easy active" data-difficulty="easy">
+        <img src="https://i.ibb.co/k2tByVgX/IMG-6171.png" alt="Facile">
+      </div>
+      <div class="difficulty-btn hard" data-difficulty="hard">
+        <img src="https://i.ibb.co/ymxJfDqY/IMG-6172.png" alt="Difficile">
+      </div>
+      <div class="difficulty-btn extreme" data-difficulty="extreme">
+        <img src="https://i.ibb.co/hxXnkQh7/IMG-5861.png" alt="Extrême">
+      </div>
+      <div class="difficulty-btn legendary" data-difficulty="legendary">
+        <img src="https://i.ibb.co/SXgvrJhm/IMG-6173.png" alt="Légendaire">
+      </div>
+      <div class="difficulty-btn gotille" data-difficulty="gotille">
+        <img src="https://i.ibb.co/tpjTH86M/unnamed-6-Photoroom.png" alt="Gotille">
+      </div>
+    </div>
+    
+    <div class="gold-container">
+      <div class="pokemon-monster pokemon1" id="pokemon1"></div>
+      
+      <div class="gold-bar easy" id="goldBar"></div>
+      
+      <div class="pokemon-monster pokemon2" id="pokemon2"></div>
+      
+      <div class="hammer" id="hammer">🔨</div>
+    </div>
+    
+    <div class="pool-bar-container">
+      <div class="pool-bar-progress" id="poolBarProgress"></div>
+      <span class="pool-bar-text" id="poolBarText">Pool de pièces: 0 💰</span>
+    </div>
+
+    <div class="instructions">
+      <h2>🌹 BAT LE POKEMON ET GAGNE LE CADEAUX</h2>
+      <p>Un Coup = Un Point de Vie en Moins</p>
+    </div>
+
+    <div class="attack-modes">
+      <div id="mode1" class="attack-mode-image active">
+        <img src="https://i.ibb.co/WNXDxn2y/IMG-7354-Photoroom.png" alt="Rose - 1 coup">
+        <div class="attack-mode-label">1 coup</div>
+      </div>
+      <div id="mode10" class="attack-mode-image">
+        <img src="https://i.ibb.co/7JsBRrCn/IMG-5885.png" alt="Rosa - 10 coups">
+        <div class="attack-mode-label">10 coups</div>
+      </div>
+      <div id="mode30" class="attack-mode-image">
+        <img src="https://i.ibb.co/8DMJ0cxy/IMG-7355-Photoroom.png" alt="Donuts - 30 coups">
+        <div class="attack-mode-label">30 coups</div>
+      </div>
+      <div id="mode100" class="attack-mode-image">
+        <img src="https://i.ibb.co/C5M6DHcS/IMG-7356-Photoroom.png" alt="Coeurs - 100 coups">
+        <div class="attack-mode-label">100 coups</div>
+      </div>
+      <div id="mode500" class="attack-mode-image">
+        <img src="https://i.ibb.co/nNy17WfL/IMG-6065.png" alt="Mini Gun - 500 coups">
+        <div class="attack-mode-label">500 coups</div>
+      </div>
+      <div id="mode1000" class="attack-mode-image">
+        <img src="https://i.ibb.co/JMPfpWV/IMG-5851.png" alt="Galaxie - 1000 coups">
+        <div class="attack-mode-label">1000 coups</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="attackBtn">🔨 Attaquer</button>
+      <button id="resetBtn">Nouvelle Partie</button>
+      <button id="spawnPokemonsBtn">Nouvelle Pokeball</button>
+      <button id="changeHiveBtn">Changer de Pokémon</button>
+    </div>
+
+    <div class="save-controls">
+      <button id="exportBtn">Exporter Sauvegarde</button>
+      <button id="importBtn">Importer Sauvegarde</button>
+    </div>
+
+    <p id="message"></p>
+  </div>
+
+  <div class="popup-overlay" id="victoryPopup">
+    <div class="popup-content">
+      <h3>🎉 Pokémon Vaincu ! 🎉</h3>
+      <div id="popupRewardImage" class="popup-reward-image"></div>
+      <p id="popupRewardText" class="popup-reward-text"></p>
+      <div id="popupVictoryMessage" class="popup-victory-message"></div>
+      <button class="popup-close-btn" id="closePopupBtn">Continuer</button>
+    </div>
+  </div>
+
+  <div class="popup-overlay" id="coinsPopup">
+    <div class="popup-content">
+      <h3>💰 Pokeball Cassée ! 💰</h3>
+      <div style="font-size: 80px; margin: 20px 0;">💥</div>
+      <p class="popup-reward-text" id="coinsPopupText" style="font-size: 2em; color: #ffd700;"></p>
+      <div class="popup-victory-message">Félicitations ! Continue de casser la ruche !</div>
+      <button class="popup-close-btn" id="closeCoinsPopupBtn">Continuer</button>
+    </div>
+  </div>
+
+  <div class="popup-overlay" id="coinPoolPopup">
+    <div class="popup-content">
+      <h3>💰 Pool de Pièces Gagné ! 💰</h3>
+      <div style="font-size: 80px; margin: 20px 0;">💰</div>
+      <p class="popup-reward-text" id="coinPoolPopupText" style="font-size: 2em; color: #ffd700;"></p>
+      <div class="popup-victory-message">Félicitations ! Tu as gagné le pool de pièces !</div>
+      <button class="popup-close-btn" id="closeCoinPoolPopupBtn">Continuer</button>
+    </div>
+  </div>
+
+  <script>
+    // Variables globales
+    let maxHP, currentHP, totalHits;
+    let hitsUntilCoin = 4;
+    let attackMode = 1;
+    let rosesEarnedThisGold = 0;
+    let combo = 0;
+    let lastHitTime = 0;
+    let isAttacking = false;
+    let audioContext = null;
+    let currentDifficulty = "easy";
+    
+    // Points de vie des Pokémon
+    let pokemon1HP, pokemon2HP;
+    let pokemon1MaxHP, pokemon2MaxHP;
+    let totalCoins = 0;
+    
+    // Pool de pièces
+    let coinPool = 0;
+    let hitsSinceLastCoinPoolAddition = 0;
+
+    // Liste des gagnants
+    let winnersList = [];
+
+    // Liste des images de ruche
+    const hiveImages = [
+      'https://i.gifer.com/4o45.gif',
+      'https://i.gifer.com/3nRA.gif',
+      'https://i.gifer.com/ZDch.gif',
+      'https://i.gifer.com/4QYe.gif',
+      'https://i.gifer.com/5GpG.gif',
+      'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExamk4MTVrdDF3anBncXc2dGU0bGFzbHdwZmp2aWFyZnVlMjJjaTducCZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/67KsrjDg2bUWI5uyvB/giphy.gif',
+      'https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3dXRydWE1M2Q3bzZtYWlsczhnajkyd2s3eHkxb2JxcXg3dW9meG9xYiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/mZsbfK4Bu6EgStOS07/giphy.gif',
+      'https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3dXRydWE1M2Q3bzZtYWlsczhnajkyd2s3eHkxb2JxcXg3dW9meG9xYiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/5eZWAnv2stuY8bfD2l/giphy.gif',
+      'https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3dDQ4eGIzcWdjaDJxcDd3dHk0NWw2N3ZwOHpyNGcwZXk3ZWxsNno3eSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/GdyiTQf1MCCTypZ0s2/giphy.gif',
+      'https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3aTFma3ptNTEyYWl3ajEzcnhtdm10b3puc25rbnZ0dTR6YXhpdG12OSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/y2ZROOlaKbd4pQyBfd/giphy.gif',
+      'https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3OG03eTVuZW1kbDVlN2s5cDRsMnptd3JtdWxycmFrMnpxa21za2RtcyZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/s5CX4GI44nDeAC9cXy/giphy.gif',
+      'https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3M3VoeDdkdzNwcXdwaHJnbXVrN215aWs2dTl0d2hyZ3gwazcwbDFqYyZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/QURbdqa5ffEwubsqy2/giphy.gif'
+    ];
+    let currentHiveIndex = 0;
+
+    // Variables pour la sauvegarde automatique
+    let autoSaveInterval;
+    let lastSaveTime = 0;
+
+    function getRandomCoins(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Éléments DOM
+    const goldBar = document.getElementById("goldBar");
+    const hammer = document.getElementById("hammer");
+    const message = document.getElementById("message");
+    const attackBtn = document.getElementById("attackBtn");
+    const gameContainer = document.getElementById("gameContainer");
+    const comboIndicator = document.getElementById("comboIndicator");
+    const saveIndicator = document.getElementById("saveIndicator");
+    
+    const victoryPopup = document.getElementById("victoryPopup");
+    const popupRewardImage = document.getElementById("popupRewardImage");
+    const popupRewardText = document.getElementById("popupRewardText");
+    const popupVictoryMessage = document.getElementById("popupVictoryMessage");
+    const closePopupBtn = document.getElementById("closePopupBtn");
+    
+    const coinsPopup = document.getElementById("coinsPopup");
+    const coinsPopupText = document.getElementById("coinsPopupText");
+    const closeCoinsPopupBtn = document.getElementById("closeCoinsPopupBtn");
+    
+    const coinPoolPopup = document.getElementById("coinPoolPopup");
+    const coinPoolPopupText = document.getElementById("coinPoolPopupText");
+    const closeCoinPoolPopupBtn = document.getElementById("closeCoinPoolPopupBtn");
+    
+    const coinPoolDisplay = document.getElementById("coinPoolDisplay");
+    const coinPoolAmount = document.getElementById("coinPoolAmount");
+
+    const winnersListElement = document.getElementById("winnersList");
+    const winnersBoard = document.getElementById("winnersBoard");
+
+    const exportBtn = document.getElementById("exportBtn");
+    const importBtn = document.getElementById("importBtn");
+
+    const poolBarProgress = document.getElementById("poolBarProgress");
+    const poolBarText = document.getElementById("poolBarText");
+
+    const impactEffects = ["💥", "🔥", "⭐", "💫", "✨", "💢"];
+
+    function makeDraggable(element) {
+      let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+      
+      element.onmousedown = dragMouseDown;
+      
+      function dragMouseDown(e) {
+        e = e || window.event;
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') {
+          return;
+        }
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+      }
+      
+      function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        element.style.top = (element.offsetTop - pos2) + "px";
+        element.style.left = (element.offsetLeft - pos1) + "px";
+      }
+      
+      function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+      }
+    }
+
+    makeDraggable(winnersBoard);
+    makeDraggable(coinPoolDisplay);
+
+    function initAudioContext() {
+      try {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+        return audioContext;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function createSound(frequency, duration, type = 'sine', volume = 0.15) {
+      const context = initAudioContext();
+      if (!context) return;
+
+      try {
+        const oscillator = context.createOscillator();
+        const gainNode = context.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(context.destination);
+        
+        oscillator.frequency.value = frequency;
+        oscillator.type = type;
+        
+        gainNode.gain.setValueAtTime(volume, context.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + duration);
+        
+        oscillator.start(context.currentTime);
+        oscillator.stop(context.currentTime + duration);
+      } catch (e) {
+      }
+    }
+
+    function playHitSound() {
+      createSound(600, 0.1, 'square');
+      setTimeout(() => createSound(300, 0.05, 'triangle'), 50);
+    }
+
+    function playCrackSound() {
+      createSound(150, 0.3, 'sawtooth');
+      setTimeout(() => createSound(100, 0.2, 'sawtooth'), 100);
+    }
+
+    function playBreakSound() {
+      createSound(80, 0.5, 'sawtooth');
+      setTimeout(() => createSound(200, 0.3, 'square'), 100);
+      setTimeout(() => createSound(400, 0.2, 'sine'), 200);
+    }
+
+    function createGoldShards() {
+      const container = goldBar.parentElement;
+      
+      for (let i = 0; i < 8; i++) {
+        const shard = document.createElement('div');
+        shard.style.cssText = `
+          position: absolute;
+          width: 10px;
+          height: 6px;
+          background: linear-gradient(45deg, #ffd700, #ffed4a);
+          border-radius: 2px;
+          pointer-events: none;
+          left: 50%;
+          top: 50%;
+          z-index: 1000;
+        `;
+        
+        container.appendChild(shard);
+        
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 80 + Math.random() * 80;
+        const duration = 600 + Math.random() * 400;
+        
+        shard.animate([
+          {
+            transform: 'translate(-50%, -50%) scale(1)',
+            opacity: 1
+          },
+          {
+            transform: `translate(calc(-50% + ${Math.cos(angle) * distance}px), calc(-50% + ${Math.sin(angle) * distance}px)) scale(0)`,
+            opacity: 0
+          }
+        ], {
+          duration: duration,
+          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+        }).onfinish = () => shard.remove();
+      }
+    }
+
+    function createHitParticles() {
+      const container = goldBar.parentElement;
+      
+      for (let i = 0; i < 4; i++) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+          position: absolute;
+          width: 6px;
+          height: 6px;
+          background: #ffd700;
+          border-radius: 50%;
+          pointer-events: none;
+          left: ${45 + Math.random() * 10}%;
+          top: ${45 + Math.random() * 10}%;
+          z-index: 999;
+        `;
+        
+        container.appendChild(particle);
+        
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 20 + Math.random() * 20;
+        
+        particle.animate([
+          {
+            transform: 'scale(1)',
+            opacity: 1
+          },
+          {
+            transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`,
+            opacity: 0
+          }
+        ], {
+          duration: 300,
+          easing: 'ease-out'
+        }).onfinish = () => particle.remove();
+      }
+    }
+
+    function createImpactEffect() {
+      const effect = document.createElement('div');
+      effect.className = 'impact-effect';
+      effect.textContent = impactEffects[Math.floor(Math.random() * impactEffects.length)];
+      effect.style.left = (Math.random() * 80 + 10) + '%';
+      effect.style.top = (Math.random() * 60 + 20) + '%';
+      
+      document.querySelector('.gold-container').appendChild(effect);
+      
+      setTimeout(() => {
+        effect.remove();
+      }, 1000);
+    }
+    
+    function showFloatingText(targetId, text, color = '#ff4d4d') {
+      const textEl = document.createElement('div');
+      textEl.className = 'floating-text';
+      textEl.textContent = text;
+      textEl.style.color = color;
+
+      let top = '50%';
+      let left = '50%';
+      
+      if (targetId === 'pokemon1') {
+        left = '20%';
+        top = '45%';
+      } else if (targetId === 'pokemon2') {
+        left = '80%';
+        top = '45%';
+      } else if (targetId === 'goldBar') {
+        left = '50%';
+        top = '40%';
+      }
+
+      textEl.style.top = `calc(${top} + ${Math.random() * 40 - 20}px)`;
+      textEl.style.left = `calc(${left} + ${Math.random() * 40 - 20}px)`;
+      
+      document.querySelector('.gold-container').appendChild(textEl);
+
+      setTimeout(() => {
+        textEl.remove();
+      }, 1450);
+    }
+
+    function updateCombo() {
+      const currentTime = Date.now();
+      if (currentTime - lastHitTime > 2000) {
+        combo = 0;
+      }
+      combo++;
+      lastHitTime = currentTime;
+      
+      if (combo >= 3) {
+        comboIndicator.textContent = `COMBO x${combo}`;
+        comboIndicator.style.display = 'block';
+      }
+    }
+
+    function showCoinsPopup(coins) {
+      coinsPopupText.textContent = `+${coins} Pièces !`;
+      coinsPopup.style.display = 'flex';
+      setTimeout(() => {
+        coinsPopup.classList.add('active');
+      }, 10);
+    }
+
+    function closeCoinsPopupFunc() {
+      coinsPopup.classList.remove('active');
+      setTimeout(() => {
+        coinsPopup.style.display = 'none';
+      }, 300);
+    }
+
+    function spawnPokemons() {
+      switch(currentDifficulty) {
+        case "easy":
+          pokemon1MaxHP = 200;
+          pokemon2MaxHP = 500;
+          break;
+        case "hard":
+          pokemon1MaxHP = 400;
+          pokemon2MaxHP = 1000;
+          break;
+        case "extreme":
+          pokemon1MaxHP = 800;
+          pokemon2MaxHP = 2000;
+          break;
+        case "legendary":
+          pokemon1MaxHP = 1600;
+          pokemon2MaxHP = 4000;
+          break;
+        case "gotille":
+          pokemon1MaxHP = 3200;
+          pokemon2MaxHP = 8000;
+          break;
+      }
+      
+      pokemon1HP = pokemon1MaxHP;
+      pokemon2HP = pokemon2MaxHP;
+      
+      document.getElementById('pokemon1').classList.remove('defeated');
+      document.getElementById('pokemon2').classList.remove('defeated');
+      
+      message.textContent = "✨ Nouvelle Pokeball ! ✨";
+      
+      setTimeout(() => {
+        let difficultyName = currentDifficulty === "easy" ? "facile" : 
+                             currentDifficulty === "hard" ? "difficile" : 
+                             currentDifficulty === "extreme" ? "extrême" : 
+                             currentDifficulty === "legendary" ? "légendaire" : "gotille";
+        message.textContent = `Pokémon ${difficultyName} - À tout moment le Pokémon peut être vaincu...`;
+      }, 2000);
+      
+      autoSave();
+    }
+
+    function changeHiveImage() {
+      currentHiveIndex = (currentHiveIndex + 1) % hiveImages.length;
+      goldBar.style.backgroundImage = `url('${hiveImages[currentHiveIndex]}')`;
+      message.textContent = "✨ Pokémon changé !";
+      
+      setTimeout(() => {
+        let difficultyName = currentDifficulty === "easy" ? "facile" : 
+                             currentDifficulty === "hard" ? "difficile" : 
+                             currentDifficulty === "extreme" ? "extrême" : 
+                             currentDifficulty === "legendary" ? "légendaire" : "gotille";
+        message.textContent = `Pokémon ${difficultyName} - À tout moment le Pokémon peut être vaincu...`;
+      }, 2000);
+      
+      autoSave();
+    }
+
+    function showCoinsEarned(target, coins) {
+      const coinsDiv = document.createElement('div');
+      coinsDiv.className = 'coins-earned';
+      coinsDiv.textContent = `+${coins} 💰`;
+      target.appendChild(coinsDiv);
+      
+      setTimeout(() => {
+        coinsDiv.remove();
+      }, 1500);
+    }
+
+    function attack() {
+      if ((currentHP <= 0 && pokemon1HP <= 0 && pokemon2HP <= 0) || isAttacking) return;
+      
+      isAttacking = true;
+      
+      let damageToHive = 0;
+      let damageToPokemon1 = 0;
+      let damageToPokemon2 = 0;
+
+      hammer.classList.add('hitting');
+      playHitSound();
+      updateCombo();
+      
+      let animationType = 'hit';
+      let shakeType = '';
+      let animationDuration = 400;
+      
+      // Déterminer le nombre de coups en fonction du mode d'attaque
+      let hits = attackMode;
+      
+      if (attackMode <= 10) {
+        animationType = 'hit';
+        shakeType = 'screen-shake';
+        animationDuration = 400;
+      } else if (attackMode <= 30) {
+        animationType = 'heavy-hit';
+        animationDuration = 600;
+      } else if (attackMode <= 100) {
+        animationType = 'critical-hit';
+        animationDuration = 800;
+      } else {
+        animationType = '';
+        animationDuration = 100;
+      }
+      
+      for (let i = 0; i < hits && (currentHP > 0 || pokemon1HP > 0 || pokemon2HP > 0); i++) {
+        const targets = [];
+        
+        if (currentHP > 0) targets.push('hive');
+        if (pokemon1HP > 0) targets.push('pokemon1');
+        if (pokemon2HP > 0) targets.push('pokemon2');
+        
+        if (targets.length === 0) break;
+        
+        const randomTarget = targets[Math.floor(Math.random() * targets.length)];
+        
+        if (randomTarget === 'hive') {
+          totalHits++;
+          currentHP--;
+          damageToHive++;
+          
+          if (attackMode <= 30) {
+            createHitParticles();
+            createImpactEffect();
+          }
+          
+          hitsUntilCoin--;
+          if (hitsUntilCoin <= 0) {
+            rosesEarnedThisGold++;
+            hitsUntilCoin = 4;
+          }
+          
+          // Logique Pool de Pièces
+          hitsSinceLastCoinPoolAddition++;
+          if (hitsSinceLastCoinPoolAddition >= 1000) {
+            coinPool += 20; // +20 pièces tous les 1000 coups
+            hitsSinceLastCoinPoolAddition = 0;
+            updateAllPoolDisplays();
+          }
+          
+          // Chance de gagner le Pool de PIÈCES (1/2000)
+          const coinPoolChance = (coinPool > 0 && Math.random() < 0.0005);
+          if (coinPoolChance) {
+            const coinsWon = coinPool;
+            coinPool = 0;
+            showCoinPoolPopup("Dresseur", coinsWon);
+            updateAllPoolDisplays();
+          }
+
+        } else if (randomTarget === 'pokemon1') {
+          pokemon1HP--;
+          damageToPokemon1++;
+          if (pokemon1HP <= 0) {
+            const coinsEarned = getRandomCoins(30, 150);
+            totalCoins += coinsEarned;
+            showCoinsEarned(document.getElementById('pokemon1'), coinsEarned);
+            addWinner("Dresseur", `${coinsEarned} pièces`);
+            setTimeout(() => showCoinsPopup(coinsEarned), 500);
+            document.getElementById('pokemon1').classList.add('defeated');
+            message.textContent = "💥 Pokeball cassée !";
+          }
+        } else if (randomTarget === 'pokemon2') {
+          pokemon2HP--;
+          damageToPokemon2++;
+          if (pokemon2HP <= 0) {
+            const coinsEarned = getRandomCoins(30, 150);
+            totalCoins += coinsEarned;
+            showCoinsEarned(document.getElementById('pokemon2'), coinsEarned);
+            addWinner("Dresseur", `${coinsEarned} pièces`);
+            setTimeout(() => showCoinsPopup(coinsEarned), 500);
+            document.getElementById('pokemon2').classList.add('defeated');
+            message.textContent = "💥 Pokeball cassée !";
+          }
+        }
+      }
+
+      if (animationType) {
+        goldBar.classList.add(animationType);
+      }
+      if (shakeType) {
+        gameContainer.classList.add(shakeType);
+      }
+      
+      if (damageToHive > 0) showFloatingText('goldBar', `-${damageToHive} HP`, '#ffc84d');
+      if (damageToPokemon1 > 0) showFloatingText('pokemon1', `-${damageToPokemon1} HP`, '#ff4d4d');
+      if (damageToPokemon2 > 0) showFloatingText('pokemon2', `-${damageToPokemon2} HP`, '#ff4d4d');
+      
+      updateUI();
+      
+      setTimeout(() => {
+        if (animationType) {
+          goldBar.classList.remove(animationType);
+        }
+        hammer.classList.remove('hitting');
+        if (shakeType) {
+          gameContainer.classList.remove(shakeType);
+        }
+        isAttacking = false;
+        
+        if (currentHP <= 0) {
+          endGame();
+          addWinner("Dresseur", "POKÉMON VAINCU!", true);
+        }
+        
+        autoSave();
+      }, animationDuration);
+    }
+
+    function updateUI() {
+      goldBar.classList.remove('hit', 'heavy-hit', 'critical-hit');
+      
+      if (currentHP === 0) {
+        goldBar.className = "gold-bar broken " + currentDifficulty;
+        message.textContent = "💥 Le Pokémon est vaincu !";
+      } else {
+        goldBar.className = "gold-bar " + currentDifficulty;
+        
+        if (maxHP - currentHP >= maxHP * 0.7) {
+          goldBar.classList.add("cracked");
+          message.textContent = "⚠️ Le Pokémon commence à faiblir...";
+        } else {
+          let difficultyName = currentDifficulty === "easy" ? "facile" : 
+                               currentDifficulty === "hard" ? "difficile" : 
+                               currentDifficulty === "extreme" ? "extrême" : 
+                               currentDifficulty === "legendary" ? "légendaire" : "gotille";
+          message.textContent = `Pokémon ${difficultyName} - À tout moment le Pokémon peut être vaincu...`;
+        }
+      }
+    }
+
+    function showVictoryPopup() {
+      let rewardText = "";
+      let victoryText = "";
+      let rewardImg = "";
+      let coinsReward = 0;
+      
+      switch(currentDifficulty) {
+        case "easy":
+          rewardText = "1088 pièces !";
+          victoryText = "Félicitations ! Tu as gagné 1088 pièces !";
+          rewardImg = "https://i.ibb.co/k2tByVgX/IMG-6171.png";
+          coinsReward = 1088;
+          break;
+        case "hard":
+          rewardText = "2250 pièces !";
+          victoryText = "Victoire totale ! Tu as gagné 2250 pièces !";
+          rewardImg = "https://i.ibb.co/ymxJfDqY/IMG-6172.png";
+          coinsReward = 2250;
+          break;
+        case "extreme":
+          rewardText = "5000 pièces !";
+          victoryText = "Incroyable ! Tu as vaincu le niveau extrême et gagné 5000 pièces !";
+          rewardImg = "https://i.ibb.co/hxXnkQh7/IMG-5861.png";
+          coinsReward = 5000;
+          break;
+        case "legendary":
+          rewardText = "10999 pièces !";
+          victoryText = "Légendaire ! Tu as vaincu le Pokémon légendaire et gagné 10999 pièces !";
+          rewardImg = "https://i.ibb.co/SXgvrJhm/IMG-6173.png";
+          coinsReward = 10999;
+          break;
+        case "gotille":
+          rewardText = "30000 pièces !";
+          victoryText = "Incroyable ! Tu as vaincu le Pokémon Gotille et gagné 30000 pièces !";
+          rewardImg = "https://i.ibb.co/tpjTH86M/unnamed-6-Photoroom.png";
+          coinsReward = 30000;
+          break;
+      }
+      
+      popupRewardImage.style.backgroundImage = `url('${rewardImg}')`;
+      
+      popupRewardText.innerHTML = `
+        <div class="difficulty-badge ${currentDifficulty}">NIVEAU ${currentDifficulty.toUpperCase()}</div><br>
+        <strong>RÉCOMPENSE :</strong><br>
+        ${rewardText}
+      `;
+      
+      popupVictoryMessage.textContent = victoryText;
+      
+      totalCoins += coinsReward;
+      
+      victoryPopup.style.display = 'flex';
+      setTimeout(() => {
+        victoryPopup.classList.add('active');
+      }, 10);
+      
+      autoSave();
+    }
+
+    function closeVictoryPopup() {
+      victoryPopup.classList.remove('active');
+      setTimeout(() => {
+        victoryPopup.style.display = 'none';
+      }, 300);
+    }
+
+    function endGame() {
+      playBreakSound();
+      setTimeout(() => createGoldShards(), 100);
+      
+      message.textContent = "💥 Félicitations ! Tu as vaincu le Pokémon de BattleBox Team Rocket ! 🌹✨";
+      
+      setTimeout(() => {
+        showVictoryPopup();
+      }, 500);
+      
+      comboIndicator.style.display = "none";
+    }
+
+    function setAttackMode(mode) {
+      attackMode = mode;
+      
+      document.querySelectorAll('.attack-mode-image').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      const btnEl = document.getElementById(`mode${mode}`);
+      if (btnEl) btnEl.classList.add('active');
+      
+      autoSave();
+    }
+
+    function setDifficulty(difficulty) {
+      currentDifficulty = difficulty;
+      
+      document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`.difficulty-btn.${difficulty}`).classList.add('active');
+      
+      goldBar.className = "gold-bar " + difficulty;
+      
+      initGame();
+      
+      autoSave();
+    }
+
+    function addWinner(username, prize, isHive = false) {
+      const winner = {
+          username,
+          prize,
+          isHive,
+          timestamp: new Date().toLocaleTimeString()
+      };
+      
+      winnersList.unshift(winner);
+      
+      if (winnersList.length > 10) {
+          winnersList.pop();
+      }
+      
+      updateWinnersDisplay();
+      
+      autoSave();
+    }
+
+    function updateWinnersDisplay() {
+      winnersListElement.innerHTML = "";
+      
+      if (winnersList.length === 0) {
+          winnersListElement.innerHTML = '<div class="winners-empty">Aucun gain pour le moment...</div>';
+          return;
+      }
+      
+      winnersList.forEach(winner => {
+          const winnerElement = document.createElement("div");
+          winnerElement.className = "winner-item";
+          
+          const usernameSpan = document.createElement("span");
+          usernameSpan.className = "winner-username";
+          usernameSpan.textContent = winner.username;
+          
+          const prizeSpan = document.createElement("span");
+          prizeSpan.className = "winner-prize";
+          prizeSpan.textContent = winner.prize;
+          
+          winnerElement.appendChild(usernameSpan);
+          winnerElement.appendChild(prizeSpan);
+          winnersListElement.appendChild(winnerElement);
+      });
+    }
+
+    function updateAllPoolDisplays() {
+      // 1. Panneau Pool de Pièces
+      coinPoolAmount.textContent = coinPool;
+
+      // 2. Barre de Pool (pour les pièces)
+      poolBarText.textContent = `Pool de pièces: ${coinPool} 💰`;
+      const visualMax = 5000; // La barre est "pleine" à 5000 pièces
+      let percent = (coinPool / visualMax) * 100;
+      if (percent < 0) percent = 0;
+      if (percent > 100) percent = 100;
+      
+      poolBarProgress.style.width = percent + '%';
+    }
+
+    function showCoinPoolPopup(userName, coinsWon) {
+      coinPoolPopupText.textContent = `${coinsWon} pièces !`;
+      coinPoolPopup.style.display = 'flex';
+      setTimeout(() => {
+          coinPoolPopup.classList.add('active');
+      }, 10);
+      
+      addWinner(userName, `${coinsWon} 💰`);
+    }
+
+    function closeCoinPoolPopupFunc() {
+      coinPoolPopup.classList.remove('active');
+      setTimeout(() => {
+          coinPoolPopup.style.display = 'none';
+      }, 300);
+    }
+
+    function autoSave() {
+      const now = Date.now();
+      if (now - lastSaveTime < 5000) {
+        return;
+      }
+      
+      lastSaveTime = now;
+      
+      const saveData = {
+        currentDifficulty,
+        maxHP,
+        currentHP,
+        pokemon1HP,
+        pokemon2HP,
+        pokemon1MaxHP,
+        pokemon2MaxHP,
+        totalCoins,
+        coinPool,
+        hitsSinceLastCoinPoolAddition,
+        totalHits,
+        hitsUntilCoin,
+        rosesEarnedThisGold,
+        currentHiveIndex,
+        winnersList,
+        attackMode,
+        timestamp: new Date().toISOString()
+      };
+      
+      try {
+        localStorage.setItem('jeremBattleboxSave', JSON.stringify(saveData));
+        
+        saveIndicator.classList.add('show');
+        setTimeout(() => {
+          saveIndicator.classList.remove('show');
+        }, 2000);
+      } catch (e) {
+        console.error("Erreur lors de la sauvegarde automatique:", e);
+      }
+    }
+
+    function loadAutoSave() {
+      try {
+        const savedData = localStorage.getItem('jeremBattleboxSave');
+        if (savedData) {
+          const saveData = JSON.parse(savedData);
+          
+          currentDifficulty = saveData.currentDifficulty || 'easy';
+          maxHP = saveData.maxHP;
+          currentHP = saveData.currentHP;
+          pokemon1HP = saveData.pokemon1HP;
+          pokemon2HP = saveData.pokemon2HP;
+          pokemon1MaxHP = saveData.pokemon1MaxHP || 200;
+          pokemon2MaxHP = saveData.pokemon2MaxHP || 500;
+          totalCoins = saveData.totalCoins || 0;
+          coinPool = saveData.coinPool || 0;
+          hitsSinceLastCoinPoolAddition = saveData.hitsSinceLastCoinPoolAddition || 0;
+          totalHits = saveData.totalHits || 0;
+          hitsUntilCoin = saveData.hitsUntilCoin || 4;
+          rosesEarnedThisGold = saveData.rosesEarnedThisGold || 0;
+          currentHiveIndex = saveData.currentHiveIndex || 0;
+          winnersList = saveData.winnersList || [];
+          attackMode = saveData.attackMode || 1;
+          
+          document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.classList.remove('active');
+          });
+          document.querySelector(`.difficulty-btn.${currentDifficulty}`).classList.add('active');
+          
+          goldBar.style.backgroundImage = `url('${hiveImages[currentHiveIndex]}')`;
+          
+          setAttackMode(attackMode);
+          
+          if (pokemon1HP <= 0) {
+            document.getElementById('pokemon1').classList.add('defeated');
+          } else {
+            document.getElementById('pokemon1').classList.remove('defeated');
+          }
+          
+          if (pokemon2HP <= 0) {
+            document.getElementById('pokemon2').classList.add('defeated');
+          } else {
+            document.getElementById('pokemon2').classList.remove('defeated');
+          }
+          
+          updateUI();
+          updateWinnersDisplay();
+          updateAllPoolDisplays();
+          
+          message.textContent = "✅ Sauvegarde automatique chargée !";
+          
+          saveIndicator.textContent = "Sauvegarde automatique chargée !";
+          saveIndicator.classList.add('show');
+          setTimeout(() => {
+            saveIndicator.classList.remove('show');
+          }, 2000);
+          
+          return true;
+        }
+        return false;
+      } catch (error) {
+        console.error("Erreur lors du chargement de la sauvegarde automatique:", error);
+        message.textContent = "❌ Erreur lors du chargement de la sauvegarde automatique";
+        return false;
+      }
+    }
+
+    function startAutoSaveInterval() {
+      autoSaveInterval = setInterval(() => {
+        autoSave();
+      }, 30000);
+    }
+
+    function exportSaveData() {
+      const saveData = {
+        currentDifficulty,
+        maxHP,
+        currentHP,
+        pokemon1HP,
+        pokemon2HP,
+        pokemon1MaxHP,
+        pokemon2MaxHP,
+        totalCoins,
+        coinPool,
+        hitsSinceLastCoinPoolAddition,
+        totalHits,
+        hitsUntilCoin,
+        rosesEarnedThisGold,
+        currentHiveIndex,
+        winnersList,
+        attackMode,
+        timestamp: new Date().toISOString()
+      };
+      
+      const dataStr = JSON.stringify(saveData, null, 2);
+      const dataBlob = new Blob([dataStr], {type: 'application/json'});
+      
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `jerem-battlebox-save-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      message.textContent = "✅ Sauvegarde exportée avec succès !";
+    }
+
+    function importSaveData() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      
+      input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = event => {
+          try {
+            const saveData = JSON.parse(event.target.result);
+            
+            currentDifficulty = saveData.currentDifficulty || 'easy';
+            maxHP = saveData.maxHP;
+            currentHP = saveData.currentHP;
+            pokemon1HP = saveData.pokemon1HP;
+            pokemon2HP = saveData.pokemon2HP;
+            pokemon1MaxHP = saveData.pokemon1MaxHP || 200;
+            pokemon2MaxHP = saveData.pokemon2MaxHP || 500;
+            totalCoins = saveData.totalCoins || 0;
+            coinPool = saveData.coinPool || 0;
+            hitsSinceLastCoinPoolAddition = saveData.hitsSinceLastCoinPoolAddition || 0;
+            totalHits = saveData.totalHits || 0;
+            hitsUntilCoin = saveData.hitsUntilCoin || 4;
+            rosesEarnedThisGold = saveData.rosesEarnedThisGold || 0;
+            currentHiveIndex = saveData.currentHiveIndex || 0;
+            winnersList = saveData.winnersList || [];
+            attackMode = saveData.attackMode || 1;
+            
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+              btn.classList.remove('active');
+            });
+            document.querySelector(`.difficulty-btn.${currentDifficulty}`).classList.add('active');
+            
+            goldBar.style.backgroundImage = `url('${hiveImages[currentHiveIndex]}')`;
+            
+            setAttackMode(attackMode);
+            
+            if (pokemon1HP <= 0) {
+              document.getElementById('pokemon1').classList.add('defeated');
+            } else {
+              document.getElementById('pokemon1').classList.remove('defeated');
+            }
+            
+            if (pokemon2HP <= 0) {
+              document.getElementById('pokemon2').classList.add('defeated');
+            } else {
+              document.getElementById('pokemon2').classList.remove('defeated');
+            }
+            
+            updateUI();
+            updateWinnersDisplay();
+            updateAllPoolDisplays();
+            
+            message.textContent = "✅ Sauvegarde importée avec succès !";
+            
+            autoSave();
+          } catch (error) {
+            message.textContent = "❌ Erreur lors de l'importation de la sauvegarde";
+          }
+        };
+        reader.readAsText(file);
+      };
+      
+      input.click();
+    }
+
+    function initGame() {
+      switch(currentDifficulty) {
+        case "easy":
+          maxHP = 5000;
+          pokemon1MaxHP = 200;
+          pokemon2MaxHP = 500;
+          break;
+        case "hard":
+          maxHP = 10000;
+          pokemon1MaxHP = 400;
+          pokemon2MaxHP = 1000;
+          break;
+        case "extreme":
+          maxHP = 24000;
+          pokemon1MaxHP = 800;
+          pokemon2MaxHP = 2000;
+          break;
+        case "legendary":
+          maxHP = 50000;
+          pokemon1MaxHP = 1600;
+          pokemon2MaxHP = 4000;
+          break;
+        case "gotille":
+          maxHP = 150000;
+          pokemon1MaxHP = 3200;
+          pokemon2MaxHP = 8000;
+          break;
+      }
+
+      currentHP = maxHP;
+      pokemon1HP = pokemon1MaxHP;
+      pokemon2HP = pokemon2MaxHP;
+      totalHits = 0;
+      hitsUntilCoin = 4;
+      rosesEarnedThisGold = 0;
+      combo = 0;
+      lastHitTime = 0;
+      isAttacking = false;
+      
+      // NE PAS RÉINITIALISER LE POOL DE PIÈCES ICI - il doit conserver sa valeur
+      // coinPool = 0; // LIGNE SUPPRIMÉE
+      // hitsSinceLastCoinPoolAddition = 0; // LIGNE SUPPRIMÉE
+      
+      document.getElementById('pokemon1').classList.remove('defeated');
+      document.getElementById('pokemon2').classList.remove('defeated');
+      
+      goldBar.className = "gold-bar " + currentDifficulty;
+      let difficultyName = currentDifficulty === "easy" ? "facile" : 
+                           currentDifficulty === "hard" ? "difficile" : 
+                           currentDifficulty === "extreme" ? "extrême" : 
+                           currentDifficulty === "legendary" ? "légendaire" : "gotille";
+      message.textContent = `Pokémon ${difficultyName} - À tout moment le Pokémon peut être vaincu...`;
+      
+      closeVictoryPopup();
+      closeCoinsPopupFunc();
+      closeCoinPoolPopupFunc();
+      comboIndicator.style.display = "none";
+      
+      updateWinnersDisplay();
+      updateAllPoolDisplays();
+      
+      autoSave();
+    }
+
+    // Event listeners
+    document.getElementById("attackBtn").addEventListener("click", attack);
+    document.getElementById("resetBtn").addEventListener("click", initGame);
+    document.getElementById("spawnPokemonsBtn").addEventListener("click", spawnPokemons);
+    document.getElementById("changeHiveBtn").addEventListener("click", changeHiveImage);
+
+    exportBtn.addEventListener("click", exportSaveData);
+    importBtn.addEventListener("click", importSaveData);
+
+    document.getElementById("mode1").addEventListener("click", () => setAttackMode(1));
+    document.getElementById("mode10").addEventListener("click", () => setAttackMode(10));
+    document.getElementById("mode30").addEventListener("click", () => setAttackMode(30));
+    document.getElementById("mode100").addEventListener("click", () => setAttackMode(100));
+    document.getElementById("mode500").addEventListener("click", () => setAttackMode(500));
+    document.getElementById("mode1000").addEventListener("click", () => setAttackMode(1000));
+
+    document.querySelectorAll('.difficulty-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        setDifficulty(this.getAttribute('data-difficulty'));
+      });
+    });
+
+    closePopupBtn.addEventListener('click', closeVictoryPopup);
+    closeCoinsPopupBtn.addEventListener('click', closeCoinsPopupFunc);
+    closeCoinPoolPopupBtn.addEventListener('click', closeCoinPoolPopupFunc);
+
+    victoryPopup.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeVictoryPopup();
+      }
+    });
+    
+    coinsPopup.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeCoinsPopupFunc();
+      }
+    });
+    
+    coinPoolPopup.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeCoinPoolPopupFunc();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (isAttacking) return;
+      
+      switch(e.key) {
+        case ' ':
+        case 'Enter':
+          e.preventDefault();
+          attack();
+          break;
+        case '1':
+          setAttackMode(1);
+          break;
+        case '2':
+          setAttackMode(10);
+          break;
+        case '3':
+          setAttackMode(30);
+          break;
+        case '4':
+          setAttackMode(100);
+          break;
+        case '5':
+          setAttackMode(500);
+          break;
+        case '6':
+          setAttackMode(1000);
+          break;
+        case 'r':
+        case 'R':
+          initGame();
+          break;
+        case 'b':
+        case 'B':
+          spawnPokemons();
+          break;
+        case 'c':
+        case 'C':
+          changeHiveImage();
+          break;
+        case 'e':
+        case 'E':
+          setDifficulty('easy');
+          break;
+        case 'd':
+        case 'D':
+          setDifficulty('hard');
+          break;
+        case 'x':
+        case 'X':
+          setDifficulty('extreme');
+          break;
+        case 'l':
+        case 'L':
+          setDifficulty('legendary');
+          break;
+        case 'g':
+        case 'G':
+          setDifficulty('gotille');
+          break;
+        case 'Escape':
+          closeVictoryPopup();
+          break;
+      }
+    });
+
+    setInterval(() => {
+      const currentTime = Date.now();
+      if (currentTime - lastHitTime > 3000 && combo > 0) {
+        combo = 0;
+        comboIndicator.style.display = "none";
+      }
+    }, 1000);
+
+    // Initialisation
+    const saveLoaded = loadAutoSave();
+    if (!saveLoaded) {
+      initGame();
+    }
+    startAutoSaveInterval();
+  </script>
+</body>
+</html>
